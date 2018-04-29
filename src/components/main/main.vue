@@ -1,8 +1,6 @@
 <template>
 	<div>
-	    <scroller lock-x>
-	    	<router-view/>
-	    </scroller>
+	    <router-view/>
 	    <Footer/>
 	</div>
 </template>

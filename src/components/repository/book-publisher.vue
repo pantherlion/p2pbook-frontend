@@ -1,14 +1,15 @@
 <template>
 	<div>
+		<x-header></x-header>
 		<blur :blur-amout="40" :url="url" :height="120">
 			<p class="center"><img :src="url"></p>
 		</blur>
 
 		<group label-align="left" label-width="140px">
-		   <cell title="书名" value="tensorflow"></cell>
-		   <cell title="作者" value="黎明"></cell>
-		   <cell title="出版社">新华出版社</cell>
-		   <cell title="发布人" value="1196385362@qq.com"></cell>
+		   <cell title="书名" :value="bookName"></cell>
+		   <cell title="作者" :value="author"></cell>
+		   <cell title="出版社" :value="publisher"></cell>
+		   <cell title="发布人" :value="owner"></cell>
            <cell  is-link title="发布人的其他闲置书本" link="/main/repository/book-preview"></cell>
         </group>
 
@@ -32,20 +33,26 @@
 </template>
 
 <script>
-	import {TransferDom,Blur,Group,Cell,XButton,XDialog,Radio,CellFormPreview  } from 'vux'
+	import {TransferDom,Blur,Group,Cell,XButton,XDialog,Radio,CellFormPreview,XHeader  } from 'vux'
 	export default {
 	     directives: {
 		    TransferDom,
 		 },
 		components:{
-			Blur,Group,Cell,XButton,XDialog,Radio,CellFormPreview 
+			Blur,Group,Cell,XButton,XDialog,Radio,CellFormPreview,XHeader 
 		},
 		data(){
+			let item = this.$route.query.book
+
 			return {
-				url:'https://o3e85j0cv.qnssl.com/tulips-1083572__340.jpg',
+				url:item.user.url,
 				show:false,
 				radio: ['Tensorflow','Pytorch'],
 				radioValue:'',
+				bookName:item.bookName,
+				author:item.author,
+				publisher:item.publisher,
+				owner:item.user.userName,
 			}
 		},
 	}

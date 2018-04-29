@@ -1,51 +1,62 @@
 <template>
-  <div>
-	<div v-transfer-dom>
-       	  <popup v-model="show0" position="bottom">
-       	  	<divider>请选择金额</divider>
-			   <checker
-			    v-model="money"
-			    default-item-class="demo-item"
-			    selected-item-class="demo-item-selected"
-			    >
-			      <checker-item v-for="i in 5" :key="i" :value="i">￥{{i*50}}</checker-item>
-			   </checker>
-       	  	<group>
-       	  		<x-button type="primary" @click.native="show0=false" plain.type="primary">支付</x-button>
-       	  	</group>
-       	  </popup>
-    </div>
+  <div>	
+	  <divider>请选择金额</divider>
+	   <checker
+	    v-model="money"
+	    default-item-class="demo-item"
+	    selected-item-class="demo-item-selected"
+	    >
+	      <checker-item v-for="i in 5" :key="i" :value="i*50">￥{{i*50}}</checker-item>
+	   </checker>
+	  	<group>
+	  		<x-button type="primary" @click.native="addDeposit" plain.type="primary">支付</x-button>
+	  	</group>
+    <alert v-model="showSuccess" title="充值成功"></alert>
+    <alert v-model="showFail" title="充值失败"></alert>
   </div>
 </template>
 
 <script>
-	import {Popup,TransferDom,Group,XButton,Checker, CheckerItem,Divider} from 'vux'
+	import {Popup,TransferDom,Group,XButton,Checker, CheckerItem,Divider,Alert} from 'vux'
+    import jQuery from 'jquery'
+
+ function addDeposit($vue){
+    let param={deposit:$vue.money}
+    jQuery.ajax({
+         type:'post',
+         url:'/p2pbook/addDeposit',
+         data:JSON.stringify(param),
+         contentType:"application/json;charset=UTF-8",
+         success:function(data){
+         	if (data.result==='success'){
+         		 $vue.showSuccess=true
+         		 $vue.$emit('updateDeposit')
+         	}
+         	else{
+         		 $vue.showFail=true
+         	}
+         },
+         fail:function(){
+           $vue.showFail=true
+         },
+      })
+  }
 	export default {
-		 directives: {
-		    TransferDom
-		  },
 		  components: {
-		    Popup,Group,XButton,Checker,CheckerItem,Divider
+		    Group,XButton,Checker,CheckerItem,Divider,Alert
 		  },
 		  data(){
              return {
              	money:0,
+             	showSuccess:false,
+                showFail:false,
              }
 		  },
-		  computed:{
-		  	show0:
-		  	  {
-		  	  	 get:function(){
-		  	  	 	 return this.show
-		  	  	 },
-		  	  	 set:function(newValue){
-		  	  	 	if (newValue==false){
-		  	  	 		this.$emit('reset0')
-		  	  	 	}
-		  	  	 },
-		  	  },
+		  methods:{
+		  	addDeposit(){
+		  		addDeposit(this)
+		  	}
 		  },
-		  props:['show'],
 		}
 </script>
 

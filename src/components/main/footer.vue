@@ -26,7 +26,7 @@
 		</tabbar-item>
 	</tabbar>
 	<div v-transfer-dom>
-	      <actionsheet :menus="menus" v-model="showMenus" theme="android" @on-click-menu="$router.push({path:'/main/idlebook-add'})"></actionsheet>
+	      <actionsheet :menus="menus" v-model="showMenus" theme="android" @on-click-menu="$router.push({path:'/main/repository/book-add'})"></actionsheet>
 	</div>
   </div>
 </template>
@@ -58,9 +58,8 @@
 	  		showMenus:false,
 	  		menus: [
                 {
-                	label:'新增闲置',
-                	label:'新增阅读'
-                }
+                	label:'发布闲置',
+                },
 		      ],
 	  	}
 	  },

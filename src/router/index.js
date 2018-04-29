@@ -2,19 +2,15 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import MyAccount from '@/components/account/myaccount'
 import Login from '@/components/login/login'
-import Userlogin from '@/components/login/Userlogin'
-import Adminlogin from '@/components/login/Adminlogin'
 import Register from '@/components/register/register'
 import Main from '@/components/main/main'
 
-import IdleBookAdd from '@/components/idlebook/idlebook-add'
-import IdleBookDetail from '@/components/idlebook/idlebook-detail'
-import IdleBookPreview from '@/components/idlebook/idlebook-preview'
 
 import BookList from '@/components/repository/book-list'
 import BookPublisher from '@/components/repository/book-publisher'
 import BookPreview from '@/components/repository/book-preview'
 import BookDetail from '@/components/repository/book-detail'
+import BookAdd from '@/components/repository/book-add'
 
 import SwapMain from '@/components/swap/main'
 import WaitingSwap from '@/components/swap/waiting-swap'
@@ -33,16 +29,6 @@ export default new Router({
     {
       path: '/',
       component: Login,
-      children:[
-         {
-           path:'userlogin',
-    	     component:Userlogin
-         },
-         {
-         	path:'adminlogin',
-         	component:Adminlogin
-         }
-      ]
     },
     {
       path:'/register',
@@ -69,6 +55,10 @@ export default new Router({
              component:BookDetail,
           },
           {
+            path:'repository/book-add',
+            component:BookAdd,
+          },
+          {
              path:'myread/myread-preview',
              component:Myread,
           },
@@ -80,18 +70,6 @@ export default new Router({
             path:'account',
             component:MyAccount
          },
-         {
-            path:'idlebook-add',
-            component:IdleBookAdd,
-          },
-          {
-            path:'idlebook-preview',
-            component:IdleBookPreview,
-          },
-          {
-            path:'idlebook-detail',
-            component:IdleBookDetail,
-          },
           {
             path:'swap/main',
             component:SwapMain,
