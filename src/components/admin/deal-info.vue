@@ -16,46 +16,19 @@
 		   <cell title="售价" :value="price2"></cell>
         </group>
 
-        <group>
-        	<flow v-if="st==-1">
-        		<flow-state state="1" title="已拒绝"></flow-state>
-        	</flow>
-        	<flow v-if="st!=-1">
-				<flow-state state="1" title="待对方确认"></flow-state>
-				<flow-line :is-done="down1" :tip="tip1"></flow-line>
-
-				<flow-state state="2" title="待管理员审核"></flow-state>
-				<flow-line :is-done="down2"></flow-line>
-
-				<flow-state state="3" title="完成"></flow-state>
-			 </flow>
-        </group>
 	</div>
 </template>
 
 <script>
 	import {Group,Cell,Flow,FlowState,FlowLine} from 'vux'
-	export default {
-	 	components:{
-			Group,Cell,Flow,FlowState,FlowLine 
+	export default{
+		components:{
+			Group,Cell
 		},
-		props:['status'],
+		props:['deal'],
 		data(){
-			let st = this.status
-			let down1=false;let down2=false;
-			let tip1='';
-			if(st!=null && st.status==1){
-				tip1="进行中"
-			}
-			else if(st!=null && st.status==2){
-				down1=true
-				down2=true
-			}
+			let st=this.deal
 			return {
-				down1:down1,
-				down2:down2,
-				tip1:tip1,
-				st:st!=null?st.status:'',
 				user1:st!=null?st.book1.user.userName:'',
 				bookName1:st!=null?st.book1.bookName:'',
 				author1:st!=null?st.book1.author:'',
@@ -69,4 +42,5 @@
 			}
 		}
 	}
+	
 </script>

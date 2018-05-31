@@ -1,33 +1,53 @@
 <template>
 	<div>
-		<group>
-			<cell link="/main/swap/main/deal-info" inline-desc="pantherlion" primary="content">
-				<p slot="icon" class="center"><img :src="url"></p>
-				<flow >
-
-				<flow-state state="2" title="邮寄"></flow-state>
-				<flow-line is-done></flow-line>
-
-				<flow-state state="3" title="管理员审核"></flow-state>
-				<flow-line tip="进行中"></flow-line>
-
-				<flow-state state="5" title="完成"></flow-state>
-			  </flow>
-			</cell>
-			
-		</group>
+	   <panel :list="list" @on-click-item="toShowDealInfo"></panel>
+	   <popup v-model="showDealInfo" width="100%" position="right" should-rerender-on-show>
+	   	  <x-switch title="关闭" v-model="showDealInfo"></x-switch>
+          <DealInfo :status="selectedSwapStatus"/>
+	   </popup>
 	</div>
 </template>
 
 <script>
-	import {Flow,FlowState,FlowLine,CellFormPreview,Group,Cell} from 'vux'
+	import {Panel,Alert,Popup,XSwitch} from 'vux'
+	import jQuery from 'jquery'
+	import DealInfo from '@/components/swap/deal-info'
+
+	function getSwapStatus($vue){
+		jQuery.ajax({
+			type:'post',
+			url:'p2pbook/getSwapStatus',
+			success:function(data){
+				$vue.list=[]
+				data.forEach((item,index)=>{
+					let status={}
+					status.title= item.book1.user.userName
+					status.desc=item.book1.bookName+'<->'+item.book2.bookName
+					status.meta=item
+					$vue.list.push(status)
+				})
+			},
+		})
+	}
+
 	export default {
 	  components: {
-	    Flow,FlowState,FlowLine,CellFormPreview,Group,Cell
+	  	 Panel,Alert,Popup,DealInfo,XSwitch
+	  },
+	  methods:{
+	  	toShowDealInfo(item){
+	  		this.showDealInfo=true
+	  		this.selectedSwapStatus=item.meta
+	  	}
+	  },
+	  created(){
+	  	getSwapStatus(this)
 	  },
 	  data(){
         return {
-        	url:'https://o3e85j0cv.qnssl.com/tulips-1083572__340.jpg',
+        	list:[],
+        	showDealInfo:false,
+        	selectedSwapStatus:null,
         }
 	  },
 	}

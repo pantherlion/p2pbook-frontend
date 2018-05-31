@@ -1,16 +1,18 @@
-<template>
+  <template>
   <div>
      <blur :blur-amout="40" :url="user.url" :height="120">
       <p class="center"><img :src="user.url"></p>
     </blur>
      <group label-align="left" label-width="100px">
-       <cell title="我的账号" :value="user.userName"></cell>
+       <cell title="用户名" :value="user.userName"></cell>
        <cell title="余额" :is-loading="showDeposit" :value="user.deposit"></cell>
        <cell is-link title="保证金充值" @click.native="showRecharge=true"></cell>
        <cell is-link title="修改密码" @click.native="showChangePass=true"></cell>
        <cell is-link title="我的闲置" @click.native="showBookView=true"></cell>
-       <cell is-link title="充值记录"></cell>
+       <cell is-link title="充值记录" @click.native="showRechargeDetail=true"></cell>
+       <cell is-link title="消费记录" @click.native="showConsumeDetail=true"></cell>
     </group>
+    <x-button  type="warn" style="margin-top:20px;" @click.native="logout" >退出</x-button>
   
     <popup v-model="showRecharge">
       <Recharge  @updateDeposit="updateDeposit"></Recharge>
@@ -20,18 +22,31 @@
       <ChangePass></ChangePass>
     </popup>
 
-    <popup v-model="showBookView" height="90%">
+    <popup v-model="showBookView" width="100%" position="right" should-rerender-on-show>
+       <x-switch title="" v-model="showBookView"></x-switch>
        <BookView></BookView>
+    </popup>
+
+    <popup v-model="showRechargeDetail" width="100%" position="right" should-rerender-on-show>
+      <x-switch title="" v-model="showRechargeDetail"></x-switch>
+      <RechargeDetail/>
+    </popup>
+
+    <popup v-model="showConsumeDetail" width="100%" position="right" should-rerender-on-show>
+      <x-switch title="" v-model="showConsumeDetail"></x-switch>
+      <ConsumeDetail/>
     </popup>
 
    </div>
 </template>
 
 <script >
-	import {TransferDom,Cell,Group,XHeader,XButton,Blur,Alert,Popup} from 'vux'
+	import {Cell,Group,XHeader,XButton,Blur,Alert,Popup,XSwitch } from 'vux'
 	import Recharge from '@/components/account/recharge'
 	import ChangePass from '@/components/account/changepass'
   import BookView from '@/components/repository/book-preview'
+  import RechargeDetail from '@/components/account/recharge-detail'
+  import ConsumeDetail from '@/components/account/consume-detail'
 
   import jQuery from 'jquery'
 
@@ -62,11 +77,8 @@
   }
 
 	export default {
-   directives: {
-        TransferDom
-    }, 
 	  components: {
-	    Cell,Group,XHeader,XButton,Recharge,ChangePass,Blur,Alert,Popup,BookView
+	    Cell,Group,XHeader,XButton,Recharge,ChangePass,Blur,Alert,Popup,BookView,XSwitch,RechargeDetail,ConsumeDetail 
 	  },
     created(){
       getCurrentUser(this)
@@ -75,6 +87,9 @@
          updateDeposit(){
               getDeposit(this)
          },
+         logout(){
+            this.$router.push('/')
+         }
     },
 	  data(){
          return {
@@ -87,25 +102,21 @@
          	showRecharge:false,
          	showChangePass:false,
           showBookView:false,
+          showRechargeDetail:false,
+          showConsumeDetail:false,
          }
 	  },
 	}
 
 </script>
 
-<style scoped>
-    p{
-    	margin:5px;
-    }
-	label.vux-label{
-		font-size: 15px;
-		text-align: left
-	}
+<style  scoped>
+  p{
+  	margin:7px;
+  }
   .center {
     text-align: center;
     padding-top: 20px;
-    color: #fff;
-    font-size: 18px;
   }
   .center img {
     width: 60px;

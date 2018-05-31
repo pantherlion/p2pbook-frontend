@@ -1,59 +1,58 @@
 <template>
 	<div>
-	
-		<flexbox :gutter="0" wrap="wrap">
-			<flexbox-item :span="1/3" v-for="(item, index) in books" >
-				<div style="width:100px;height:100px;padding:12px;line-height:100px">
-					<img class="previewer-demo-img" :src="item.src"  width="100" height="100" @click="show(index)">
-				</div>
-				<div style="margin-bottom:10px;padding:5px" @click="$router.push('/main/repository/book-detail')">
-					<p style="font-size:18px;text-align:center">{{item.bookname}}</p>
-				    <p style="font-size:18px;text-align:center">{{item.author}}</p>
-				</div>
-			</flexbox-item>
-		</flexbox>
-	
-	<previewer :list="books" ref="previewer" :options="options" ></previewer>
+		<panel :list="books"  @on-click-item="showMyBookDetail"></panel>
+	   <!--  <previewer :list="books" ref="previewer"  ></previewer> -->
+	    <popup v-model="showBookDetail" position="right" width="100%" height="100%" should-rerender-on-show >
+	    	 <x-switch title="关闭" v-model="showBookDetail"></x-switch>
+	    	<BookDetail :book="selectedBook" @refresh="refresh"/>
+	    </popup>
 	</div>
 </template>	
 
 <script>
-	import {Previewer,Flexbox,FlexboxItem,Scroller } from 'vux'
+	import {Previewer,Panel,Popup,XSwitch} from 'vux'
+	import BookDetail from '@/components/repository/book-detail'
 	import jQuery from 'jquery'
-	export default {
-		components:{
-			Previewer,Flexbox,FlexboxItem,Scroller
-		},
-		methods:{
-			show(index){
-				this.$refs.previewer.show(index)
-			}
-		},
-		created(){
-			let $this = this
-			jQuery.ajax({
+	function showMyBook($vue){
+		jQuery.ajax({
 				type:'post',
 				url:'p2pbook/show-mybook',
 				success:function(data){
-					$this.books=[]
+					$vue.books=[]
 					data.forEach((item,index)=>{
 						let book={}
 						book.src=item.url
-						book.bookname=item.bookName
-						book.author=item.author
-						$this.books.push(book)
+						book.title=item.bookName
+						book.desc=item.author+','+item.publisher
+						book.meta=item
+						$vue.books.push(book)
 					})
 				}
 			})
+	}
+
+	export default {
+		components:{
+			Previewer,Panel,Popup,BookDetail,XSwitch
+		},
+		created(){
+			showMyBook(this)
+		},
+		methods:{
+			showMyBookDetail(item){
+				this.showBookDetail=true
+				this.selectedBook=item.meta
+			},
+			refresh(){
+				showMyBook(this)
+				this.showBookDetail=false
+			}
 		},
 		data(){
            return {
            	  books:[],
-           	   options: {
-		        getThumbBoundsFn (index) {
-		         
-		        }
-		      },
+           	  selectedBook:null,
+           	  showBookDetail:false,
            }
 		},
 	}

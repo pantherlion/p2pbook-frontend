@@ -18,8 +18,10 @@ import SwapInfo from '@/components/swap/swap-info'
 import DealStatus from '@/components/swap/deal-status'
 import DealInfo from '@/components/swap/deal-info'
 
-import Myread from '@/components/myread/myread-preview'
+import MyreadPreview from '@/components/myread/myread-preview'
 import MyreadDetail from '@/components/myread/myread-detail'
+
+import Admin from '@/components/admin/deal-status'
 
 
 Vue.use(Router)
@@ -35,6 +37,10 @@ export default new Router({
       component:Register
     },
     {
+      path:'/admin',
+      component:Admin
+    },
+    {
       path:'/main',
       component:Main,
       children:[
@@ -42,29 +48,13 @@ export default new Router({
             path:'repository/book-list',
             component:BookList,
          },
-         {
-            path:'repository/book-publisher',
-            component:BookPublisher,
-          },
-          {
-            path:'repository/book-preview',
-            component:BookPreview,
-          },
-          {
-             path:'repository/book-detail',
-             component:BookDetail,
-          },
           {
             path:'repository/book-add',
             component:BookAdd,
           },
           {
              path:'myread/myread-preview',
-             component:Myread,
-          },
-          {
-            path:'myread/myread-detail',
-            component:MyreadDetail,
+             component:MyreadPreview,
           },
          {
             path:'account',
@@ -74,22 +64,15 @@ export default new Router({
             path:'swap/main',
             component:SwapMain,
             children:[
-                {
+              {
                 path:'waiting-swap',
                 component:WaitingSwap,
-              },
-               {
-                path:'swap-info',
-                component:SwapInfo
               },
               {
                 path:'deal-status',
                 component:DealStatus,
               },
-              {
-                path:'deal-info',
-                component:DealInfo,
-              }
+            
             ]
           },
       ],

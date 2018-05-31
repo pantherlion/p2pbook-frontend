@@ -1,20 +1,21 @@
 <template>
 	<div>
-      <x-header></x-header>
+      <x-header>发布闲置书籍</x-header>
       <div>
         <p class="center"><img  :src="book.url" @click="$refs.upload_file.click()"></p>
         <p><input  @change="fileChange()" type="file" ref="upload_file" style="display:none"/></p>
           <group label-align="left" label-width="100px">
-             <x-input title="书名" placeholder="必填" v-model="book.bookName"></x-input>
-             <x-input title="出版社" placeholder="必填" v-model="book.publisher"></x-input>
-             <x-input title="作者" placeholder="必填" v-model="book.author"></x-input>
+             <x-input title="书名" ref="bookName" placeholder="必填" v-model="book.bookName" required></x-input>
+             <x-input title="出版社" ref="publisher" placeholder="必填" v-model="book.publisher" required></x-input>
+             <x-input title="作者" ref="author" placeholder="必填" v-model="book.author" required></x-input>
              <x-number :value="0" :min="0" :max="1000" title="售价" v-model="book.price" fillable></x-number>
              <selector title="种类" v-model="book.category" :options="ids"></selector>
              <x-textarea title="描述" :max="200" v-model="book.desc"  placeholder="可选"></x-textarea>
-              <x-button type="primary" @click.native="submit">提交</x-button>
+            <x-button type="primary" @click.native="submit">提交</x-button>
         </group>
       </div>
       <alert v-model="show" title="发布成功"></alert>
+      <alert v-model="show1" title="请检查填写的数据"></alert>
 	</div>
 </template>
 <script>
@@ -32,19 +33,20 @@
             author:'',
             price:'',
             desc:'',
-            category:'',
+            category:'0',
             url:'',
           },
           ids:[
-              {key:'1',value:'信息技术'},
-              {key:'2',value:'文学'},
-              {key:'3',value:'言情'},
-              {key:'4',value:'玄幻'},
-              {key:'5',value:'亲子'},
-              {key:'6',value:'惊悚'},
-              {key:'7',value:'都市'},
+              {key:'0',value:'信息技术'},
+              {key:'1',value:'文学'},
+              {key:'2',value:'言情'},
+              {key:'3',value:'玄幻'},
+              {key:'4',value:'亲子'},
+              {key:'5',value:'惊悚'},
+              {key:'6',value:'都市'},
             ],
           show:false,
+          show1:false,
 	  	}
 	  },
     methods:{
@@ -58,7 +60,18 @@
           }
       },
       submit(){
-       let $this=this;
+       let $this=this
+       //验证表单填写是否正确
+        for(let key in $this.$refs){
+          let item =  $this.$refs[key]
+          if('valid' in item){
+            if(item.valid==false){
+              $this.show1=true
+              return
+            }
+          }
+        }
+
        jQuery.ajax({
               type:'post',
               url:'/p2pbook/add-book',
@@ -76,12 +89,9 @@
 	}
 </script>
 <style lang="less" scoped>
-
 .center {
     text-align: center;
     padding-top: 20px;
-    color: #fff;
-    font-size: 18px;
   }
   .center img {
     width: 100px;

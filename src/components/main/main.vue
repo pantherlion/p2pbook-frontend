@@ -14,7 +14,7 @@
 			XHeader,Scroller,Footer
 		},
 		mounted(){
-           this.$router.push('/main/swap/main')
+           this.$router.push('/main/repository/book-list')
 		},
 	}
 </script>
