@@ -4,7 +4,7 @@
     <group label-align="left" label-width="120px">
         <x-input title="用户名" ref="userName"  placeholder="必填" v-model="user.userName" required></x-input>
         <x-input title="密码" ref="passWord" placeholder="必填" v-model="user.passWord" type="password" required :min="8"></x-input>
-        <selector title="身份" v-model="user.identity" :options="ids"></selector>
+        <popup-picker title="身份" :data="authList" v-model="selectedAuth" value-text-align="left"> </popup-picker>
          <x-input title="验证码" v-model="certPic.inputStr"  required>
             <img @click="getCertPic()" slot="right-full-height" :src="certPic.imgSrc" width="120" height="50">
         </x-input>
@@ -20,11 +20,14 @@
 </template>
 
 <script>
-  import {XInput ,Selector,Group,Flexbox, FlexboxItem,XButton,Alert,CellBox,Cell  } from 'vux'
+  import {XInput ,Selector,Group,Flexbox, FlexboxItem,XButton,Alert,CellBox,Cell,PopupPicker} from 'vux'
   import jQuery from 'jquery'
+  import {getCertPic} from '@/components/register/api'
+  import {login} from '@/components/login/api'
+
   export default {
    components:{
-      XInput ,Selector,Group,Flexbox, FlexboxItem,XButton,Alert,CellBox,Cell    
+      XInput ,Selector,Group,Flexbox, FlexboxItem,XButton,Alert,CellBox,Cell,PopupPicker 
   },
    data(){
       return{
@@ -37,6 +40,8 @@
           userName:'',
           passWord:'',
         },
+        selectedAuth:['普通用户'],
+        authList:[['普通用户','平台管理员']],
         certPic:{
           randStr:'',
           imgSrc:'',
@@ -50,13 +55,9 @@
   methods:{
     getCertPic(){
         let $this = this
-        jQuery.ajax({
-          type:'get',
-          url:'/p2pbook/getCertPic',
-          success:function(data){
+        getCertPic().then(function(data){
             $this.certPic.randStr=data.randStr
             $this.certPic.imgSrc='data:image/png;base64,'+data.imgSrc
-          }
         })
       },
      submit:function(){
@@ -76,14 +77,17 @@
           $this.show2=true;
           return
         }
-      
-        jQuery.ajax({
-          type:'post',
-          url:'/p2pbook/login',
-          data:JSON.stringify(this.user),
-          contentType:"application/json;charset=UTF-8",
-          success:function(data){
-            if(data.result=='success'){
+
+        //修改登录身份
+        if(this.selectedAuth[0]=='普通用户'){
+          this.user.identity='1'
+        }
+        else{
+          this.user.identity='2'
+        }
+
+        login(JSON.stringify(this.user)).then(function(data){
+           if(data.result=='success'){
                if(data.identity=='user'){
                   $this.$router.push('/main')
                }
@@ -95,7 +99,6 @@
               //登录失败，给出提示
               $this.show=true
             }
-          }
         })
      }
   }

@@ -9,7 +9,7 @@
 		</msg>
 		<popup v-model="showReadDetail" width="100%" position="right" should-rerender-on-show >
 			<x-switch title="" v-model="showReadDetail"></x-switch>
-			<MyReadDetail :myread="selectedReadDetail" @refresh="refresh"/>
+			<MyReadDetail v-if="showReadDetail" :myread="selectedReadDetail" @refresh="refresh"/>
 		</popup>
 	</div>
 </template>	

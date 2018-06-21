@@ -14,7 +14,7 @@
 			<x-input title="身份证号码" ref="identity" placeholder="必填"  v-model="user.identity" required></x-input>
 			<x-address title="地址" ref="address"  v-model="user.myaddress" :list="addressData" placeholder="请选择地址"  required></x-address>
 			<x-textarea title="街道/小区" ref="street" :max="200" v-model="user.street"  placeholder="必填"></x-textarea>
-			<selector title="身份"  :options="auth" v-model="user.auth"></selector>
+			<popup-picker title="身份" :data="authList" v-model="selectedAuth"> </popup-picker>
 			<x-input title="验证码" v-model="certPic.inputStr"  required>
 	          <img @click="getCertPic()" slot="right-full-height" :src="certPic.imgSrc" width="120" height="50">
 	        </x-input>
@@ -28,11 +28,13 @@
 </template>
 
 <script>
-	import {XInput, Group, XButton,XHeader,XAddress,ChinaAddressV4Data,XTextarea,Value2nameFilter as value2name ,Alert,Blur,Selector } from 'vux'
+	import {XInput, Group, XButton,XHeader,XAddress,ChinaAddressV4Data,XTextarea,Value2nameFilter as value2name ,Alert,Blur,PopupPicker } from 'vux'
+	import * as API from '@/components/register/api'
 	import jQuery from 'jquery'
+
 	export default{
 		components:{
-			XInput,XButton,Group,XHeader,XAddress,XTextarea,Alert,Blur,Selector 
+			XInput,XButton,Group,XHeader,XAddress,XTextarea,Alert,Blur,PopupPicker 
 		},
 		data(){
 			return {
@@ -49,7 +51,8 @@
 					url:'',
 					auth:'0',
 				},
-				auth:[{key:'0',value:'普通用户'},{key:'1',value:'平台管理员'}],
+				authList:[['普通用户','平台管理员']],
+				selectedAuth:['普通用户'],
 				addressData: ChinaAddressV4Data,
 				certPic:{
 					randStr:'',
@@ -77,13 +80,10 @@
 			},
 			getCertPic(){
 				let $this = this
-				jQuery.ajax({
-					type:'get',
-					url:'/p2pbook/getCertPic',
-					success:function(data){
-						$this.certPic.randStr=data.randStr
-						$this.certPic.imgSrc='data:image/png;base64,'+data.imgSrc
-					}
+				API.getCertPic().then(function(data){
+					//success
+					$this.certPic.randStr=data.randStr
+				    $this.certPic.imgSrc='data:image/png;base64,'+data.imgSrc
 				})
 			},
 			submit(){
@@ -106,20 +106,22 @@
 			
 				//拼接地址
 				this.user.address=value2name(this.user.myaddress,ChinaAddressV4Data)+' '+this.user.street
-				jQuery.ajax({
-		          type:'post',
-		          url:'/p2pbook/register',
-		          data:JSON.stringify(this.user),
-		          contentType:"application/json;charset=UTF-8",
-		          success:function(data){
-		             if(data.result=='success'){
-		             	$this.show1=true;
-		             }
-		             else{
-		             	$this.show0=true
-		             }
-		          }
-		        })
+				//修改身份
+				if(this.selectedAuth[0]=='普通用户'){
+					this.user.auth='0'
+				}
+				else{
+					this.user.auth='1'
+				}
+				
+				API.register(JSON.stringify(this.user)).then(function(data){
+					 if(data.result=='success'){
+			         	$this.show1=true;
+			         }
+			         else{
+			         	$this.show0=true
+			         }
+				})
 			}
 		}
 	}

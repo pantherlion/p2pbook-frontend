@@ -11,15 +11,16 @@
       <cell title="下次计划打卡时间">
          <inline-calendar
             class="inline-calendar-demo"
-            v-model="deadline"
+            v-model="deadLine"
             :show-last-month="false"
             :highlight-weekend="true"
+            :marks="currentDeadLine"
             :disable-past="true">
             </inline-calendar>
       </cell>
     </group>
 
-    <x-button type="primary" >更新阅读计划</x-button>
+    <x-button type="primary" @click.native="updateSchedule">更新阅读计划</x-button>
     <x-button style="margin-top:15px;"  type="warn" @click.native="deleteMyRead">删除阅读计划</x-button>
 	</div>
 </template>
@@ -42,6 +43,20 @@ function deleteMyRead($vue){
       })
   }
 
+  function updateSchedule($vue){
+    let param={bookId:$vue.myread.book.id,page:$vue.page,deadLine:$vue.deadLine}
+    jQuery.ajax({
+      type:'post',
+      url:'p2pbook/updateSchedule',
+      data:jQuery.param(param),
+      success:function(data){
+        if(data.result=='success'){
+          $vue.$emit('refresh')
+        }
+      }
+    })
+  }
+
 export default {
   components: {
     XButton,Group,Cell,InlineXNumber,InlineCalendar 
@@ -50,17 +65,25 @@ export default {
   methods:{
     deleteMyRead(){
       deleteMyRead(this)
+    },
+    updateSchedule(){
+      updateSchedule(this)
     }
   },
   data(){
-    let myDate = new Date();
+    let myDate = new Date()
+    myDate.setTime(this.myread.deadLine)
+    let year=myDate.getFullYear()
+    let month=myDate.getMonth()+1
+    let date=myDate.getDate()
     return{
-      bookName:this.myread!=null?this.myread.book.bookName:'',
-      publisher:this.myread!=null?this.myread.book.publisher:'',
-      author:this.myread!=null?this.myread.book.author:'',
-      price:this.myread!=null?this.myread.book.price:'',
-      page:this.myread!=null?this.myread.page:0,
-      deadline:myDate.getFullYear()+'-'+(myDate.getMonth()+1)+'-'+myDate.getDate()
+      bookName:this.myread.book.bookName,
+      publisher:this.myread.book.publisher,
+      author:this.myread.book.author,
+      price:this.myread.book.price,
+      page:this.myread.page,
+      deadLine:year+'-'+month+'-'+date,
+      currentDeadLine:[year+'-'+month+'-'+date],
     }
   }
 }
